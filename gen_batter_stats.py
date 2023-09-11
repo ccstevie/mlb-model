@@ -75,7 +75,6 @@ def ballParkPal(team):
 
     for index, batter in enumerate(batterStats):
         try:
-            print(batter)
             lastName = batter[1].split(' ')[1]
             element = table.find_elements(By.XPATH, f'//*[contains(text(), "{lastName}")]')
 
@@ -93,7 +92,7 @@ def ballParkPal(team):
     return batterStats
 
 def main():
-    ballParkPal('KC')
+    ballParkPal('CHC')
 
 if __name__ == '__main__':
     main()
