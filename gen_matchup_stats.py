@@ -11,11 +11,12 @@ from gen_batter_stats import ballParkPal as getAllBattersOfTeam
 
 def getGames():
     url = 'https://www.rotowire.com/baseball/daily-lineups.php'
+    tomorrowUrl ='https://www.rotowire.com/baseball/daily-lineups.php?date=tomorrow'
     options = EdgeOptions()
     options.add_argument('--start-maximized')
     options.add_experimental_option('excludeSwitches', ['enable-logging'])
     driver = webdriver.Edge(options=options)
-    
+
     driver.get(url)
     
     # return values
