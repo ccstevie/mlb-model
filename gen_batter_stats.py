@@ -12,7 +12,7 @@ def ballParkPal(team):
     driver = webdriver.Edge(options=options)
     driver.implicitly_wait(10)
     
-    driver.get("https://ballparkpal.com/ParkFactors.php")
+    driver.get('https://ballparkpal.com/ParkFactors.php')
 
     table = driver.find_element(By.XPATH, '/html/body/div[1]/table/tbody/tr')
     row = table.find_element(By.XPATH, f'//*[contains(text(), "{team}")]')
@@ -99,6 +99,7 @@ def ballParkPal(team):
             continue
 
     return batterStats, parkFactor
+    # return batterStats
 
 def main():
     print(ballParkPal('HOU'))

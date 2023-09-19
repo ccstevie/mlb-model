@@ -67,16 +67,16 @@ def main():
         batListA.append(awayBatterStats)
         parkFactorA.append(awayParkFactor)
 
-    # for name in homeTeamAbbr:
-    #     homeBatterStats, homeParkFactor = getAllBattersOfTeam(name)
-    #     if name == 'KC':
-    #         homeBatterStats = homeBatterStats[1:]
-    #     batListH.append(homeBatterStats)
-    #     parkFactorH.append(homeParkFactor)
+    for name in homeTeamAbbr:
+        homeBatterStats, homeParkFactor = getAllBattersOfTeam(name)
+        if name == 'KC':
+            homeBatterStats = homeBatterStats[1:]
+        batListH.append(homeBatterStats)
+        parkFactorH.append(homeParkFactor)
 
-    # for index, awayPitcher in enumerate(awayPitchers):
-    #     awayPT, awayPP, awayPO, awayLines, awayHand = getPitcherStats(awayPitcher, awayTeamAbbr[index])
-    #     pitchListA.append([awayPT, awayPP, awayPO, awayLines, awayHand])
+    for index, awayPitcher in enumerate(awayPitchers):
+        awayPT, awayPP, awayPO, awayLines, awayHand = getPitcherStats(awayPitcher, awayTeamAbbr[index])
+        pitchListA.append([awayPT, awayPP, awayPO, awayLines, awayHand])
 
     for index, homePitcher in enumerate(homePitchers):
         homePT, homePP, homePO, homeLines, homeHand = getPitcherStats(homePitcher, homeTeamAbbr[index])
@@ -97,7 +97,7 @@ def main():
                    continue
                 weight = (float(player[j]) - float(pitchListH[i][0][j])) * float(pitchListH[i][1][j])
                 pp += weight
-                score += weight
+            score += pp
             cmp = (float(player[11]) + float(pitchListH[i][2][0]))/2 - 0.051
             xbh = (cmp*100/0.051) * (100/125)
             score += xbh
@@ -133,53 +133,57 @@ def main():
             score *= parkFactor
 
             batterMap.append(player[0:2] + [pp] + [xbh] + [bb] + [so] + [line] + [diff] + [opsFactor] + [parkFactor] + [round(score, 1)])
+            # batterMap.append(player[0:2] + [pp] + [xbh] + [bb] + [so] + [line] + [diff] + [opsFactor] + [round(score, 1)])
 
-    # for i in range(numGames):
-    #     if len(pitchListA[i][0]) < 2:
-    #         continue
-    #     parkFactor = parkFactorH[i]
-    #     for player in batListH[i]:
-    #         score = 0
-    #         for j in range(3, 11):
-    #             if not pitchListA[i][0][j]:
-    #                continue 
-    #             weight = (float(player[j]) - float(pitchListA[i][0][j])) * float(pitchListA[i][1][j])
-    #             score += weight
-    #         cmp = (float(player[11]) + float(pitchListA[i][2][0]))/2 - 0.051
-    #         xbh = (cmp*100/0.051) * (100/125)
-    #         score += xbh
-    #         cmp = (float(player[12]) + float(pitchListA[i][2][1]))/2 - 0.103
-    #         bb = -(cmp*100/0.103) * (100/125)
-    #         score += bb
-    #         cmp = (float(player[13]) + float(pitchListA[i][2][2]))/2 - 0.227
-    #         so = -(cmp*100/0.227) * (100/125)
-    #         score += so
-    #         cmp = (float(player[14]) + float(pitchListA[i][3][0]))/2 - 0.23
-    #         line = (cmp*100/0.23) * (100/125)
-    #         score += line
-    #         diff = 0
-    #         if (player[2] == "L"):
-    #             if (pitchListA[i][0][2] == "L"):
-    #                 diff = (float(player[15]) - float(pitchListA[i][4][0]))
-    #             else:
-    #                 diff = (float(player[16]) - float(pitchListA[i][4][0]))
-    #         elif (player[2] == "R"):
-    #             if (pitchListA[i][0][2] == "L"):
-    #                 diff = (float(player[15]) - float(pitchListA[i][4][1]))
-    #             else:
-    #                 diff = (float(player[16]) - float(pitchListA[i][4][1]))
-    #         else:
-    #             if (pitchListA[i][0][2] == "L"):
-    #                 diff = (float(player[15]) - float(pitchListA[i][4][1]))
-    #             else:
-    #                 diff = (float(player[16]) - float(pitchListA[i][4][0]))
-    #         score += diff
-    #         if len(player) > 17:
-    #             opsFactor = float(player[17]) - .736 + 1
-    #             score *= opsFactor
-    #         score *= parkFactor
+    for i in range(numGames):
+        if len(pitchListA[i][0]) < 2:
+            continue
+        parkFactor = parkFactorH[i]
+        for player in batListH[i]:
+            score = 0
+            pp = 0
+            for j in range(3, 11):
+                if not pitchListA[i][0][j]:
+                   continue 
+                weight = (float(player[j]) - float(pitchListA[i][0][j])) * float(pitchListA[i][1][j])
+                pp += weight
+            score += pp
+            cmp = (float(player[11]) + float(pitchListA[i][2][0]))/2 - 0.051
+            xbh = (cmp*100/0.051) * (100/125)
+            score += xbh
+            cmp = (float(player[12]) + float(pitchListA[i][2][1]))/2 - 0.103
+            bb = -(cmp*100/0.103) * (100/125)
+            score += bb
+            cmp = (float(player[13]) + float(pitchListA[i][2][2]))/2 - 0.227
+            so = -(cmp*100/0.227) * (100/125)
+            score += so
+            cmp = (float(player[14]) + float(pitchListA[i][3][0]))/2 - 0.23
+            line = (cmp*100/0.23) * (100/125)
+            score += line
+            diff = 0
+            if (player[2] == "L"):
+                if (pitchListA[i][0][2] == "L"):
+                    diff = (float(player[15]) - float(pitchListA[i][4][0]))
+                else:
+                    diff = (float(player[16]) - float(pitchListA[i][4][0]))
+            elif (player[2] == "R"):
+                if (pitchListA[i][0][2] == "L"):
+                    diff = (float(player[15]) - float(pitchListA[i][4][1]))
+                else:
+                    diff = (float(player[16]) - float(pitchListA[i][4][1]))
+            else:
+                if (pitchListA[i][0][2] == "L"):
+                    diff = (float(player[15]) - float(pitchListA[i][4][1]))
+                else:
+                    diff = (float(player[16]) - float(pitchListA[i][4][0]))
+            score += diff
+            if len(player) > 17:
+                opsFactor = float(player[17]) - .736 + 1
+                score *= opsFactor
+            score *= parkFactor
 
-    #         batterMap.append(player[0:2] + [pp] + [xbh] + [bb] + [so] + [line] + [diff] + [opsFactor] + [parkFactor] + [round(score, 1)])
+            batterMap.append(player[0:2] + [pp] + [xbh] + [bb] + [so] + [line] + [diff] + [opsFactor] + [parkFactor] + [round(score, 1)])
+            # batterMap.append(player[0:2] + [pp] + [xbh] + [bb] + [so] + [line] + [diff] + [opsFactor] + [round(score, 1)])
 
     arr = np.array(batterMap)
     sorterBatters = arr[arr[:, 9].argsort()[::-1]]
@@ -187,6 +191,7 @@ def main():
     with open(f'{date.today()}.csv','w', newline='') as f:
         w = csv.writer(f)
         w.writerow(["Team", "Player", "PP", "XBH", "BB", "K", "Line", "H", "OPS Factor", "Park Factor", "Score"])
+        # w.writerow(["Team", "Player", "PP", "XBH", "BB", "K", "Line", "H", "OPS Factor", "Score"])
         w.writerows(sorterBatters)
 
 if __name__ == '__main__':
