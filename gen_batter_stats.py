@@ -3,15 +3,24 @@ from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.edge.options import Options as EdgeOptions
 from time import sleep
+import re
 
 def ballParkPal(team):
     print(team)
     options = EdgeOptions()
     # options.add_experimental_option('excludeSwitches', ['enable-logging'])
-    url = 'https://ballparkpal.com/Batter-Research.php#'
     driver = webdriver.Edge(options=options)
     driver.implicitly_wait(10)
     
+    driver.get("https://ballparkpal.com/ParkFactors.php")
+
+    table = driver.find_element(By.XPATH, '/html/body/div[1]/table/tbody/tr')
+    row = table.find_element(By.XPATH, f'//*[contains(text(), "{team}")]')
+    tr = row.find_element(By.XPATH, '../../..')
+    td = tr.find_elements(By.TAG_NAME, 'td')
+    parkFactor = 1 + (float(re.sub(r"[^0-9.]", "", td[4].text))/100)
+    
+    url = 'https://ballparkpal.com/Batter-Research.php#'
     driver.get(url)
 
     driver.find_element(By.XPATH, '//*[@id="batters_table_wrapper"]/div[2]/div/button[2]').click()
@@ -89,10 +98,10 @@ def ballParkPal(team):
         except NoSuchElementException:
             continue
 
-    return batterStats
+    return batterStats, parkFactor
 
 def main():
-    ballParkPal('CHC')
+    print(ballParkPal('HOU'))
 
 if __name__ == '__main__':
     main()
