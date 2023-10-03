@@ -27,6 +27,11 @@ def getGames():
     for index, lineup in enumerate(lineups[:-2]):
         if index == 4:
             continue
+        try:
+            awayPitchers.append(lineup.find_element(By.XPATH, f'{path}/div[{index+1}]/div[2]/div[2]/ul[1]/li[1]/div[1]/a').text.split()[1])
+            homePitchers.append(lineup.find_element(By.XPATH, f'{path}/div[{index+1}]/div[2]/div[2]/ul[2]/li[1]/div[1]/a').text.split()[1])
+        except:
+            continue
         abbrA = lineup.find_element(By.XPATH, f'{path}/div[{index+1}]/div[2]/div[1]/div/div[1]/div').text
         abbrH = lineup.find_element(By.XPATH, f'{path}/div[{index+1}]/div[2]/div[1]/div/div[2]/div').text
         if abbrA == 'CWS':
@@ -41,8 +46,6 @@ def getGames():
         else:
             awayTeams.append(lineup.find_element(By.XPATH, f'{path}/div[{index+1}]/div[2]/a/div[1]').text.split()[0])
         homeTeams.append(lineup.find_element(By.XPATH, f'{path}/div[{index+1}]/div[2]/a/div[2]').text.split()[0])
-        awayPitchers.append(lineup.find_element(By.XPATH, f'{path}/div[{index+1}]/div[2]/div[2]/ul[1]/li[1]/div[1]/a').text.split()[1])
-        homePitchers.append(lineup.find_element(By.XPATH, f'{path}/div[{index+1}]/div[2]/div[2]/ul[2]/li[1]/div[1]/a').text.split()[1])
 
     driver.quit()
 
@@ -99,16 +102,16 @@ def main():
                 pp += weight
             score += pp
             cmp = (float(player[11]) + float(pitchListH[i][2][0]))/2 - 0.051
-            xbh = (cmp*100/0.051) * (100/125)
+            xbh = (cmp*100/0.051) * (100/125) * 10
             score += xbh
             cmp = (float(player[12]) + float(pitchListH[i][2][1]))/2 - 0.103
-            bb = -(cmp*100/0.103) * (100/125)
+            bb = -(cmp*100/0.103) * (100/125) * 10
             score += bb
             cmp = (float(player[13]) + float(pitchListH[i][2][2]))/2 - 0.227
-            so = -(cmp*100/0.227) * (100/125)
+            so = -(cmp*100/0.227) * (100/125) * 10
             score += so
             cmp = (float(player[14]) + float(pitchListH[i][3][0]))/2 - 0.23
-            line = (cmp*100/0.23) * (100/125)
+            line = (cmp*100/0.23) * (100/125) * 10
             score += line
             diff = 0
             if (player[2] == "L"):
@@ -131,8 +134,9 @@ def main():
                 opsFactor = float(player[17]) - .736 + 1
                 score *= opsFactor
             score *= parkFactor
+            score /= 100
 
-            batterMap.append(player[0:2] + [pp] + [xbh] + [bb] + [so] + [line] + [diff] + [opsFactor] + [parkFactor] + [round(score, 1)])
+            batterMap.append(player[0:2] + [pitchListH[i][0][0]] + [pp] + [xbh] + [bb] + [so] + [line] + [diff] + [opsFactor] + [parkFactor] + [round(score, 1)])
             # batterMap.append(player[0:2] + [pp] + [xbh] + [bb] + [so] + [line] + [diff] + [opsFactor] + [round(score, 1)])
 
     for i in range(numGames):
@@ -149,16 +153,16 @@ def main():
                 pp += weight
             score += pp
             cmp = (float(player[11]) + float(pitchListA[i][2][0]))/2 - 0.051
-            xbh = (cmp*100/0.051) * (100/125)
+            xbh = (cmp*100/0.051) * (100/125) * 10
             score += xbh
             cmp = (float(player[12]) + float(pitchListA[i][2][1]))/2 - 0.103
-            bb = -(cmp*100/0.103) * (100/125)
+            bb = -(cmp*100/0.103) * (100/125) * 10
             score += bb
             cmp = (float(player[13]) + float(pitchListA[i][2][2]))/2 - 0.227
-            so = -(cmp*100/0.227) * (100/125)
+            so = -(cmp*100/0.227) * (100/125) * 10
             score += so
             cmp = (float(player[14]) + float(pitchListA[i][3][0]))/2 - 0.23
-            line = (cmp*100/0.23) * (100/125)
+            line = (cmp*100/0.23) * (100/125) * 10
             score += line
             diff = 0
             if (player[2] == "L"):
@@ -181,16 +185,17 @@ def main():
                 opsFactor = float(player[17]) - .736 + 1
                 score *= opsFactor
             score *= parkFactor
+            score /= 100
 
-            batterMap.append(player[0:2] + [pp] + [xbh] + [bb] + [so] + [line] + [diff] + [opsFactor] + [parkFactor] + [round(score, 1)])
+            batterMap.append(player[0:2] + [pitchListA[i][0][0]] + [pp] + [xbh] + [bb] + [so] + [line] + [diff] + [opsFactor] + [parkFactor] + [round(score, 1)])
             # batterMap.append(player[0:2] + [pp] + [xbh] + [bb] + [so] + [line] + [diff] + [opsFactor] + [round(score, 1)])
 
     arr = np.array(batterMap)
-    sorterBatters = arr[arr[:, 9].argsort()[::-1]]
+    sorterBatters = arr[arr[:, 11].argsort()[::-1]]
 
     with open(f'{date.today()}.csv','w', newline='') as f:
         w = csv.writer(f)
-        w.writerow(["Team", "Player", "PP", "XBH", "BB", "K", "Line", "H", "OPS Factor", "Park Factor", "Score"])
+        w.writerow(["Team", "Player", "Opp", "PP", "XBH", "BB", "K", "Line", "H", "OPS Factor", "Park Factor", "Score"])
         # w.writerow(["Team", "Player", "PP", "XBH", "BB", "K", "Line", "H", "OPS Factor", "Score"])
         w.writerows(sorterBatters)
 

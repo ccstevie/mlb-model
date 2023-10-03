@@ -26,13 +26,14 @@ def ballParkPal(pitcher, team):
     typeChildren = typeParent.find_elements(By.TAG_NAME, 'tr')
 
     if len(typeChildren) > 1:
-        correctPlayer = typeParent.find_element(By.XPATH, f'//*[contains(text(), "{team}")]')
-        tr = correctPlayer.find_element(By.XPATH, '..')
-        row = tr.find_elements(By.XPATH, '*')
-        if row[0].text == "No matching records found":
+        try:
+            correctPlayer = typeParent.find_element(By.XPATH, f'//*[contains(text(), "{team}")]')
+            tr = correctPlayer.find_element(By.XPATH, '..')
+            row = tr.find_elements(By.XPATH, '*')
+            for data in row:
+                pitchType.append(data.text)
+        except:
             return [], [], [], [], []
-        for data in row:
-            pitchType.append(data.text)
     else:
         row = typeChildren[0].find_elements(By.XPATH, '*')
         if row[0].text == "No matching records found":

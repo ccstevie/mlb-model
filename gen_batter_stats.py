@@ -18,7 +18,7 @@ def ballParkPal(team):
     row = table.find_element(By.XPATH, f'//*[contains(text(), "{team}")]')
     tr = row.find_element(By.XPATH, '../../..')
     td = tr.find_elements(By.TAG_NAME, 'td')
-    parkFactor = 1 + (float(re.sub(r"[^0-9.]", "", td[4].text))/100)
+    parkFactor = 1 + (float(re.sub(r"[^-0-9.]", "", td[4].text))/100)
     
     url = 'https://ballparkpal.com/Batter-Research.php#'
     driver.get(url)
@@ -35,8 +35,17 @@ def ballParkPal(team):
         body = child.find_element(By.XPATH, '..')
         batterData = body.find_elements(By.TAG_NAME, 'td')
         rowData = []
-        for data in batterData:
-            rowData.append(data.text)
+        for i, data in enumerate(batterData):
+            if i == 1:
+                # player
+                suffix = data.text.split()[-1]
+                if suffix == 'Jr.':
+                    name = ' '.join(data.text.split()[-2:])
+                    rowData.append(name)
+                else:
+                    rowData.append(suffix)
+            else:
+                rowData.append(data.text)
         if len(rowData) > 0:
             batterStats.append(rowData)
 
@@ -73,7 +82,7 @@ def ballParkPal(team):
         batterData = body.find_elements(By.TAG_NAME, 'td')
         batterStats[index].extend([batterData[3].text, batterData[4].text])
     
-    driver.get('https://www.fantasypros.com/mlb/stats/hitters.php?range=7&page=ALL')
+    driver.get('https://www.fantasypros.com/mlb/stats/hitters.php?range=15&page=ALL')
 
     # find table
     table = driver.find_element(By.CLASS_NAME, 'mobile-table')
@@ -84,7 +93,7 @@ def ballParkPal(team):
 
     for index, batter in enumerate(batterStats):
         try:
-            lastName = batter[1].split(' ')[1]
+            lastName = batter[1]
             element = table.find_elements(By.XPATH, f'//*[contains(text(), "{lastName}")]')
 
             for player in element:
@@ -102,7 +111,7 @@ def ballParkPal(team):
     # return batterStats
 
 def main():
-    print(ballParkPal('HOU'))
+    print(ballParkPal('OAK'))
 
 if __name__ == '__main__':
     main()
